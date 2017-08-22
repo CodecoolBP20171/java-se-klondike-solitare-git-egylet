@@ -220,15 +220,18 @@ public class Game extends Pane {
 
     public void flipLastTableauCard(Card card) {
         if (draggedCards.size() == 0) {
-            List currentPile = card.getContainingPile().getCards();
-            switch (currentPile.size()) {
-                case 1:
-                    break;
-                default:
-                    card.getContainingPile().getLastButOneCard().flip();
+                List currentPile = card.getContainingPile().getCards();
+                Card cardToFlip = card.getContainingPile().getLastButOneCard();
+                switch (currentPile.size()) {
+                    case 1:
+                        break;
+                    default:
+                        if (cardToFlip.isFaceDown() == true) {
+                            cardToFlip.flip();
+                        }
+                }
             }
         }
-    }
 
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
