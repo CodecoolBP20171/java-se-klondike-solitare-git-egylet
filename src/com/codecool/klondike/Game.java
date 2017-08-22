@@ -93,6 +93,10 @@ public class Game extends Pane {
         //this is the logic, rules and valid moves
         if (pile != null) {
             handleValidMove(card, pile);
+            //TODO
+            if(isGameWon()){
+                System.exit(0);
+            }
         }
         else if (pile2 != null){
             handleValidMove(card, pile2);
@@ -104,7 +108,13 @@ public class Game extends Pane {
     };
 
     public boolean isGameWon() {
-        //TODO
+        int counter = 0;
+        for(Pile pile: tableauPiles){
+            counter += pile.numOfCards();
+        }
+        if(stockPile.numOfCards() + counter + discardPile.numOfCards() == 1){
+            return true;
+        }
         return false;
     }
 
@@ -129,7 +139,6 @@ public class Game extends Pane {
 
     public boolean isMoveValid(Card card, Pile destPile) {
         //TODO
-        System.out.println(card.getRank());
         if (destPile.getTopCard() != null) {
             if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank()) {
                 System.out.println("yeah");
@@ -144,7 +153,7 @@ public class Game extends Pane {
                 return true;
             }
         }
-        return false;
+        return true;
     }
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
