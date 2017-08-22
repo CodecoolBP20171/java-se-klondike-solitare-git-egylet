@@ -50,7 +50,9 @@ public class Game extends Pane {
             card.flip();
             card.setMouseTransparent(false);
             System.out.println("Placed " + card + " to the waste.");
-        }
+        } /*else if (card.getContainingPile().getPileType() == Pile.PileType.TABLEAU && card.isFaceDown()) {
+            card.flip();
+        }*/
     };
 
     private EventHandler<MouseEvent> stockReverseCardsHandler = e -> {
@@ -71,7 +73,7 @@ public class Game extends Pane {
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
 
-        draggedCards.clear();//ettől elszáll a faszba - it is empty at this point, tries to clear it - nullpointer exception error
+        draggedCards.clear();
         draggedCards.add(card);
 
         card.getDropShadow().setRadius(20);
@@ -171,12 +173,14 @@ public class Game extends Pane {
                 msg = String.format("Placed %s to the foundation.", card);
             if (destPile.getPileType().equals(Pile.PileType.TABLEAU))
                 msg = String.format("Placed %s to a new pile.", card);
+
         } else {
             msg = String.format("Placed %s to %s.", card, destPile.getTopCard());
         }
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
+        flipLastTableauCard(card);
     }
 
 
@@ -211,6 +215,18 @@ public class Game extends Pane {
             tableauPiles.add(tableauPile);
             allPiles.add(tableauPile);
             getChildren().add(tableauPile);
+        }
+    }
+
+    public void flipLastTableauCard(Card card) {
+        if (draggedCards.size() == 0) {
+            List currentPile = card.getContainingPile().getCards();
+            switch (currentPile.size()) {
+                case 1:
+                    break;
+                default:
+                    card.getContainingPile().getLastButOneCard().flip();
+            }
         }
     }
 
