@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.codecool.klondike.Pile.PileType.FOUNDATION;
+import static com.codecool.klondike.Pile.PileType.TABLEAU;
+
 public class Game extends Pane {
 
     //contains cards???
@@ -27,6 +30,7 @@ public class Game extends Pane {
     private Pile discardPile;
     private List<Pile> foundationPiles = FXCollections.observableArrayList();
     private List<Pile> tableauPiles = FXCollections.observableArrayList();
+    private List<Pile> allPiles = FXCollections.observableArrayList();
 
     private double dragStartX, dragStartY;
     private List<Card> draggedCards = FXCollections.observableArrayList();
@@ -83,12 +87,17 @@ public class Game extends Pane {
         if (draggedCards.isEmpty())
             return;
         Card card = (Card) e.getSource();
-        Pile pile = getValidIntersectingPile(card, tableauPiles);
+        Pile pile = getValidIntersectingPile(card, foundationPiles);
+        Pile pile2 = getValidIntersectingPile(card, tableauPiles);
         //TODO
         //this is the logic, rules and valid moves
         if (pile != null) {
             handleValidMove(card, pile);
-        } else {
+        }
+        else if (pile2 != null){
+            handleValidMove(card, pile2);
+        }
+        else {
             draggedCards.forEach(MouseUtil::slideBack);
             draggedCards.clear();
         }
@@ -120,8 +129,22 @@ public class Game extends Pane {
 
     public boolean isMoveValid(Card card, Pile destPile) {
         //TODO
-        // the logic goes here!!!!
-        return true;
+        System.out.println(card.getRank());
+        if (destPile.getTopCard() != null) {
+            if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank()) {
+                System.out.println("yeah");
+                return true;
+            } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank()) {
+                return true;
+            }
+        } else if (destPile.getTopCard() == null) {
+            if (destPile.getPileType() == FOUNDATION) {
+                return true;
+            } else if (destPile.getPileType() == TABLEAU) {
+                return true;
+            }
+        }
+        return false;
     }
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
@@ -144,7 +167,7 @@ public class Game extends Pane {
     private void handleValidMove(Card card, Pile destPile) {
         String msg = null;
         if (destPile.isEmpty()) {
-            if (destPile.getPileType().equals(Pile.PileType.FOUNDATION))
+            if (destPile.getPileType().equals(FOUNDATION))
                 msg = String.format("Placed %s to the foundation.", card);
             if (destPile.getPileType().equals(Pile.PileType.TABLEAU))
                 msg = String.format("Placed %s to a new pile.", card);
@@ -172,11 +195,12 @@ public class Game extends Pane {
         getChildren().add(discardPile);
 
         for (int i = 0; i < 4; i++) {
-            Pile foundationPile = new Pile(Pile.PileType.FOUNDATION, "Foundadtion " + i, FOUNDATION_GAP);
+            Pile foundationPile = new Pile(FOUNDATION, "Foundadtion " + i, FOUNDATION_GAP);
             foundationPile.setBlurredBackground();
             foundationPile.setLayoutX(610 + i * 180);
             foundationPile.setLayoutY(20);
             foundationPiles.add(foundationPile);
+            allPiles.add(foundationPile);
             getChildren().add(foundationPile);
         }
         for (int i = 0; i < 7; i++) {
@@ -185,6 +209,7 @@ public class Game extends Pane {
             tableauPile.setLayoutX(95 + i * 180);
             tableauPile.setLayoutY(275);
             tableauPiles.add(tableauPile);
+            allPiles.add(tableauPile);
             getChildren().add(tableauPile);
         }
     }
