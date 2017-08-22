@@ -19,8 +19,10 @@ import java.util.List;
 
 public class Game extends Pane {
 
+    //contains cards???
     private List<Card> deck = new ArrayList<>();
 
+    //type of piles - stock, waste, foundation*4, tableu*7
     private Pile stockPile;
     private Pile discardPile;
     private List<Pile> foundationPiles = FXCollections.observableArrayList();
@@ -29,12 +31,15 @@ public class Game extends Pane {
     private double dragStartX, dragStartY;
     private List<Card> draggedCards = FXCollections.observableArrayList();
 
+
+    //visual stuff, don't bother with it
     private static double STOCK_GAP = 1;
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
 
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
+        //moves the card from stock to the waste pile
         Card card = (Card) e.getSource();
         if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
             card.moveToPile(discardPile);
@@ -45,6 +50,7 @@ public class Game extends Pane {
     };
 
     private EventHandler<MouseEvent> stockReverseCardsHandler = e -> {
+        //needs implementation - check below - refills stock from the waste if the stock pile is empty
         refillStockFromDiscard();
     };
 
@@ -57,18 +63,18 @@ public class Game extends Pane {
         Card card = (Card) e.getSource();
         Pile activePile = card.getContainingPile();
         if (activePile.getPileType() == Pile.PileType.STOCK)
-            return;
+            return;// this means that you cannot put cards back into the stock pile
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
 
-        draggedCards.clear();
+        draggedCards.clear();//ettől elszáll a faszba - it is empty at this point, tries to clear it - nullpointer exception error
         draggedCards.add(card);
 
         card.getDropShadow().setRadius(20);
         card.getDropShadow().setOffsetX(10);
         card.getDropShadow().setOffsetY(10);
 
-        card.toFront();
+        card.toFront();// ???? needs implementation
         card.setTranslateX(offsetX);
         card.setTranslateY(offsetY);
     };
@@ -79,6 +85,7 @@ public class Game extends Pane {
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
         //TODO
+        //this is the logic, rules and valid moves
         if (pile != null) {
             handleValidMove(card, pile);
         } else {
@@ -107,11 +114,13 @@ public class Game extends Pane {
 
     public void refillStockFromDiscard() {
         //TODO
+        //needs implementation
         System.out.println("Stock refilled from discard pile.");
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
         //TODO
+        // the logic goes here!!!!
         return true;
     }
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
@@ -183,6 +192,7 @@ public class Game extends Pane {
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
         //TODO
+        //implement this
         deckIterator.forEachRemaining(card -> {
             stockPile.addCard(card);
             addMouseEventHandlers(card);
