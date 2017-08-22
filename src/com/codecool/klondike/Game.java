@@ -132,15 +132,14 @@ public class Game extends Pane {
         System.out.println(card.getRank());
         if (destPile.getTopCard() != null) {
             if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank()) {
-                System.out.println("yeah");
                 return true;
             } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank()) {
                 return true;
             }
         } else if (destPile.getTopCard() == null) {
-            if (destPile.getPileType() == FOUNDATION) {
+            if (destPile.getPileType() == FOUNDATION && card.getRank() == 1) {
                 return true;
-            } else if (destPile.getPileType() == TABLEAU) {
+            } else if (destPile.getPileType() == TABLEAU && card.getRank() == 13) {
                 return true;
             }
         }
