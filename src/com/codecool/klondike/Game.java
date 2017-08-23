@@ -52,7 +52,9 @@ public class Game extends Pane {
             card.flip();
             card.setMouseTransparent(false);
             System.out.println("Placed " + card + " to the waste.");
-        }
+        } /*else if (card.getContainingPile().getPileType() == Pile.PileType.TABLEAU && card.isFaceDown()) {
+            card.flip();
+        }*/
     };
 
     private EventHandler<MouseEvent> stockReverseCardsHandler = e -> {
@@ -73,7 +75,7 @@ public class Game extends Pane {
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
 
-        draggedCards.clear();//ettől elszáll a faszba - it is empty at this point, tries to clear it - nullpointer exception error
+        draggedCards.clear();
         draggedCards.add(card);
 
         card.getDropShadow().setRadius(20);
@@ -145,9 +147,11 @@ public class Game extends Pane {
     public boolean isMoveValid(Card card, Pile destPile) {
         //TODO
         if (destPile.getTopCard() != null) {
-            if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank()) {
+            if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank() &&
+                    Card.isSameSuit(destPile.getTopCard(), card)) {
                 return true;
-            } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank()) {
+            } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank() &&
+                    Card.isOppositeColor(destPile.getTopCard(), card)) {
                 return true;
             }
         } else if (destPile.getTopCard() == null) {
@@ -185,12 +189,14 @@ public class Game extends Pane {
                 msg = String.format("Placed %s to the foundation.", card);
             if (destPile.getPileType().equals(Pile.PileType.TABLEAU))
                 msg = String.format("Placed %s to a new pile.", card);
+
         } else {
             msg = String.format("Placed %s to %s.", card, destPile.getTopCard());
         }
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
+        //flipLastTableauCard();
     }
 
 
@@ -228,6 +234,7 @@ public class Game extends Pane {
         }
     }
 
+
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
 
@@ -253,6 +260,11 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+
+    public List<Pile> getTableauPiles() {
+        return tableauPiles;
     }
 
 }
