@@ -3,6 +3,8 @@ package com.codecool.klondike;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -12,6 +14,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,7 +43,6 @@ public class Game extends Pane {
     private static double STOCK_GAP = 1;
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
-
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         //moves the card from stock to the waste pile
@@ -93,9 +95,12 @@ public class Game extends Pane {
         //this is the logic, rules and valid moves
         if (pile != null) {
             handleValidMove(card, pile);
-            //TODO
             if(isGameWon()){
-                System.exit(0);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(null);
+                alert.setContentText("Congrats, you won :)");
+                alert.setHeaderText(null);
+                alert.showAndWait();
             }
         }
         else if (pile2 != null){
