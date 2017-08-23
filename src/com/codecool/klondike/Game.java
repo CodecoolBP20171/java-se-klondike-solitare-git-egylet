@@ -133,7 +133,10 @@ public class Game extends Pane {
         //TODO
         System.out.println(card.getRank());
         if (destPile.getTopCard() != null) {
-            if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank()) {
+            if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank() &&
+                    destPile.getTopCard().getSuit() == card.getSuit()) {
+                System.out.println("Top card" + destPile.getTopCard().getSuit());
+                System.out.println("Grabbed card" + card.getRank());
                 return true;
             } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank()) {
                 return true;
