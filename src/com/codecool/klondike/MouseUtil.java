@@ -54,13 +54,23 @@ public class MouseUtil {
             animateCardMovement(currentCard, sourceX, sourceY, targetX,
                     targetY + ((destPile.isEmpty() ? i : i + 1) * destCardGap), Duration.millis(150),
                     e -> {
+                        Pile pileToCheck = currentCard.getContainingPile();
                         currentCard.moveToPile(destPile);
                         currentCard.getDropShadow().setRadius(2);
                         currentCard.getDropShadow().setOffsetX(0);
                         currentCard.getDropShadow().setOffsetY(0);
+                        flipLastTableauCard(pileToCheck);
                     });
         }
     }
+
+    public static void flipLastTableauCard(Pile pile) {
+        Card cardToFlip = pile.getTopCard();
+        if (cardToFlip.isFaceDown()) {
+            cardToFlip.flip();
+        }
+    }
+
 
     private static void animateCardMovement(
             Card card, double sourceX, double sourceY,
