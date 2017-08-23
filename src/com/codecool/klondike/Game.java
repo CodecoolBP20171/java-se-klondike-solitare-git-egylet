@@ -108,11 +108,11 @@ public class Game extends Pane {
     };
 
     public boolean isGameWon() {
-        int counter = 0;
+        int numberOfTableauCards = 0;
         for(Pile pile: tableauPiles){
-            counter += pile.numOfCards();
+            numberOfTableauCards += pile.numOfCards();
         }
-        if(stockPile.numOfCards() + counter + discardPile.numOfCards() == 1){
+        if(stockPile.numOfCards() + numberOfTableauCards + discardPile.numOfCards() == 1){
             return true;
         }
         return false;
@@ -141,20 +141,20 @@ public class Game extends Pane {
         //TODO
         if (destPile.getTopCard() != null) {
             if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank()) {
-                System.out.println("yeah");
                 return true;
             } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank()) {
                 return true;
             }
         } else if (destPile.getTopCard() == null) {
-            if (destPile.getPileType() == FOUNDATION) {
+            if (destPile.getPileType() == FOUNDATION && card.getRank() == 1) {
                 return true;
-            } else if (destPile.getPileType() == TABLEAU) {
+            } else if (destPile.getPileType() == TABLEAU && card.getRank() == 13) {
                 return true;
             }
         }
-        return true;
+        return false;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
