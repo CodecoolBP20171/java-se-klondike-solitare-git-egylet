@@ -220,6 +220,7 @@ public class Game extends Pane {
 
     public void flipLastTableauCard(Card card) {
         if (draggedCards.size() == 0) {
+            try {
                 List currentPile = card.getContainingPile().getCards();
                 Card cardToFlip = card.getContainingPile().getLastButOneCard();
                 switch (currentPile.size()) {
@@ -230,8 +231,11 @@ public class Game extends Pane {
                             cardToFlip.flip();
                         }
                 }
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("crap");
             }
         }
+    }
 
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
