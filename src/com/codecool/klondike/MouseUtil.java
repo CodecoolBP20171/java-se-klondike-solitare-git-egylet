@@ -66,7 +66,7 @@ public class MouseUtil {
 
     public static void flipLastTableauCard(Pile pile) {
         Card cardToFlip = pile.getTopCard();
-        if (cardToFlip.isFaceDown()) {
+        if (cardToFlip != null && cardToFlip.isFaceDown()) {
             cardToFlip.flip();
         }
     }
