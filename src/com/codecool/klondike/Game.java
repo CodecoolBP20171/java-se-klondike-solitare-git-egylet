@@ -135,7 +135,8 @@ public class Game extends Pane {
         if (destPile.getTopCard() != null) {
             if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank()) {
                 return true;
-            } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank()) {
+            } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank() &&
+                    Card.isOppositeColor(destPile.getTopCard(), card)) {
                 return true;
             }
         } else if (destPile.getTopCard() == null) {
