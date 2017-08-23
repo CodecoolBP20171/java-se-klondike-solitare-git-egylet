@@ -3,6 +3,8 @@ package com.codecool.klondike;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -12,6 +14,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,7 +43,6 @@ public class Game extends Pane {
     private static double STOCK_GAP = 1;
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
-
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         //moves the card from stock to the waste pile
@@ -95,6 +97,13 @@ public class Game extends Pane {
         //this is the logic, rules and valid moves
         if (pile != null) {
             handleValidMove(card, pile);
+            if(isGameWon()){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(null);
+                alert.setContentText("Congrats, you won :)");
+                alert.setHeaderText(null);
+                alert.showAndWait();
+            }
         }
         else if (pile2 != null){
             handleValidMove(card, pile2);
@@ -106,7 +115,13 @@ public class Game extends Pane {
     };
 
     public boolean isGameWon() {
-        //TODO
+        int numberOfTableauCards = 0;
+        for(Pile pile: tableauPiles){
+            numberOfTableauCards += pile.numOfCards();
+        }
+        if(stockPile.numOfCards() + numberOfTableauCards + discardPile.numOfCards() == 1){
+            return true;
+        }
         return false;
     }
 
@@ -131,12 +146,9 @@ public class Game extends Pane {
 
     public boolean isMoveValid(Card card, Pile destPile) {
         //TODO
-        System.out.println(card.getRank());
         if (destPile.getTopCard() != null) {
             if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank() &&
                     Card.isSameSuit(destPile.getTopCard(), card)) {
-                System.out.println("Top card" + destPile.getTopCard().getSuit());
-                System.out.println("Grabbed card" + card.getRank());
                 return true;
             } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank() &&
                     Card.isOppositeColor(destPile.getTopCard(), card)) {
@@ -151,6 +163,7 @@ public class Game extends Pane {
         }
         return false;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
