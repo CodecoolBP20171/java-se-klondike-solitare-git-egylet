@@ -134,7 +134,7 @@ public class Game extends Pane {
         System.out.println(card.getRank());
         if (destPile.getTopCard() != null) {
             if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank() &&
-                    destPile.getTopCard().getSuit() == card.getSuit()) {
+                    Card.isSameSuit(destPile.getTopCard(), card)) {
                 System.out.println("Top card" + destPile.getTopCard().getSuit());
                 System.out.println("Grabbed card" + card.getRank());
                 return true;
