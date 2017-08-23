@@ -180,7 +180,7 @@ public class Game extends Pane {
         System.out.println(msg);
         MouseUtil.slideToDest(draggedCards, destPile);
         draggedCards.clear();
-        flipLastTableauCard(card);
+        //flipLastTableauCard();
     }
 
 
@@ -218,24 +218,6 @@ public class Game extends Pane {
         }
     }
 
-    public void flipLastTableauCard(Card card) {
-        if (draggedCards.size() == 0) {
-            try {
-                List currentPile = card.getContainingPile().getCards();
-                Card cardToFlip = card.getContainingPile().getLastButOneCard();
-                switch (currentPile.size()) {
-                    case 1:
-                        break;
-                    default:
-                        if (cardToFlip.isFaceDown() == true) {
-                            cardToFlip.flip();
-                        }
-                }
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("crap");
-            }
-        }
-    }
 
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
@@ -262,6 +244,11 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+
+    public List<Pile> getTableauPiles() {
+        return tableauPiles;
     }
 
 }
