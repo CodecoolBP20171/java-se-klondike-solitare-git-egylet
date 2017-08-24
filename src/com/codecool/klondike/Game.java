@@ -2,6 +2,7 @@ package com.codecool.klondike;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
@@ -13,19 +14,15 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static com.codecool.klondike.Pile.PileType.FOUNDATION;
 import static com.codecool.klondike.Pile.PileType.TABLEAU;
 
 public class Game extends Pane {
 
-    //contains cards???
     private List<Card> deck = new ArrayList<>();
 
-    //type of piles - stock, waste, foundation*4, tableu*7
     private Pile stockPile;
     private Pile discardPile;
     private List<Pile> foundationPiles = FXCollections.observableArrayList();
@@ -36,14 +33,12 @@ public class Game extends Pane {
     private List<Card> draggedCards = FXCollections.observableArrayList();
 
 
-    //visual stuff, don't bother with it
     private static double STOCK_GAP = 1;
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
 
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
-        //moves the card from stock to the waste pile
         Card card = (Card) e.getSource();
         if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
             card.moveToPile(discardPile);
@@ -54,7 +49,6 @@ public class Game extends Pane {
     };
 
     private EventHandler<MouseEvent> stockReverseCardsHandler = e -> {
-        //needs implementation - check below - refills stock from the waste if the stock pile is empty
         refillStockFromDiscard();
     };
 
@@ -66,21 +60,38 @@ public class Game extends Pane {
     private EventHandler<MouseEvent> onMouseDraggedHandler = e -> {
         Card card = (Card) e.getSource();
         Pile activePile = card.getContainingPile();
+        List<Card> cards = activePile.getCards();
         if (activePile.getPileType() == Pile.PileType.STOCK)
-            return;// this means that you cannot put cards back into the stock pile
+            return;
         double offsetX = e.getSceneX() - dragStartX;
         double offsetY = e.getSceneY() - dragStartY;
 
-        draggedCards.clear();//ettől elszáll a faszba - it is empty at this point, tries to clear it - nullpointer exception error
-        draggedCards.add(card);
+        draggedCards.clear();
 
-        card.getDropShadow().setRadius(20);
-        card.getDropShadow().setOffsetX(10);
-        card.getDropShadow().setOffsetY(10);
+        if (!card.isFaceDown()) {
+            draggedCards.add(card);
+            card.getDropShadow().setRadius(20);
+            card.getDropShadow().setOffsetX(10);
+            card.getDropShadow().setOffsetY(10);
 
-        card.toFront();// ???? needs implementation
-        card.setTranslateX(offsetX);
-        card.setTranslateY(offsetY);
+            card.toFront();
+            card.setTranslateX(offsetX);
+            card.setTranslateY(offsetY);
+
+            if (activePile.getPileType() == Pile.PileType.TABLEAU) {
+                for (Card c : cards) {
+                    if (card.getRank() > c.getRank() && !c.isFaceDown()) {
+                        draggedCards.add(c);
+                        c.getDropShadow().setRadius(20);
+                        c.getDropShadow().setOffsetX(10);
+                        c.getDropShadow().setOffsetY(10);
+                        c.toFront();
+                        c.setTranslateX(offsetX);
+                        c.setTranslateY(offsetY);
+                    }
+                }
+            }
+        }
     };
 
     private EventHandler<MouseEvent> onMouseReleasedHandler = e -> {
@@ -89,8 +100,6 @@ public class Game extends Pane {
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, foundationPiles);
         Pile pile2 = getValidIntersectingPile(card, tableauPiles);
-        //TODO
-        //this is the logic, rules and valid moves
         if (pile != null) {
             handleValidMove(card, pile);
         }
@@ -122,14 +131,29 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        //TODO
-        //needs implementation
+        List<Card> cards = discardPile.getCards();
+        List<Card> tempList = new ArrayList<>();
+        Iterator<Card> discardCard = cards.iterator();
+
+        for (int i = 0; i < cards.size(); i++) {
+            Card card = discardCard.next();
+            tempList.add(card);
+        }
+
+        discardPile.getCards().clear();
+        Collections.reverse(tempList);
+
+        for (Card card : tempList) {
+            card.flip();
+            stockPile.addCard(card);
+        }
+
+
         System.out.println("Stock refilled from discard pile.");
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
         //TODO
-        System.out.println(card.getRank());
         if (destPile.getTopCard() != null) {
             if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank()) {
                 System.out.println("yeah");
