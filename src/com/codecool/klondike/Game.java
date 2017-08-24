@@ -57,6 +57,36 @@ public class Game extends Pane {
     private EventHandler<MouseEvent> onMousePressedHandler = e -> {
         dragStartX = e.getSceneX();
         dragStartY = e.getSceneY();
+        System.out.println(e.getClickCount());
+        if (e.getClickCount() == 2){
+            Card card = (Card) e.getSource();
+            for (int i = 0; i <= foundationPiles.size()-1; i++){
+
+                try {
+
+                    if (card.getRank() == 1){
+
+                        for (int j = 0; j<=foundationPiles.size()-1; j++){
+
+                            if (foundationPiles.get(j).getTopCard() == null){
+                                Pile currentPile = card.getContainingPile();
+                                card.moveToPile(foundationPiles.get(j));
+                                MouseUtil.flipLastTableauCard(currentPile);
+                            }
+                        }
+                    }
+
+                    if (card.getSuit() == foundationPiles.get(i).getTopCard().getSuit() &&
+                            foundationPiles.get(i).getTopCard().getRank() == (card.getRank() -1)) {
+                        Pile currentPile = card.getContainingPile();
+                        card.moveToPile(foundationPiles.get(i));
+                        MouseUtil.flipLastTableauCard(currentPile);
+                    }
+                }catch (NullPointerException emilia_clarke){
+                    System.out.println("Suck the D");
+                }
+            }
+        }
     };
 
     private EventHandler<MouseEvent> onMouseDraggedHandler = e -> {
@@ -120,6 +150,7 @@ public class Game extends Pane {
             draggedCards.clear();
         }
     };
+
 
     public boolean isGameWon() {
         int numberOfTableauCards = 0;
