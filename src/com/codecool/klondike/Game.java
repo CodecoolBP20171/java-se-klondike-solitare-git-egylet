@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
@@ -110,6 +111,19 @@ public class Game extends Pane {
                 alert.setContentText("Congrats, you won :)");
                 alert.setHeaderText(null);
                 alert.showAndWait();
+                Optional<ButtonType> result = alert.showAndWait();
+                if (!result.isPresent()) {
+                    // alert is exited, no button has been pressed.
+                } else if (result.get() == ButtonType.OK) {
+                    for (Pile pile3 : tableauPiles) {
+                        Iterator<Card> p = pile3.getCards().iterator();
+                        while (p.hasNext()) {
+                            Card card1 = p.next();
+                            card1.moveToPile(stockPile);
+                        }
+                    }
+                    dealCards();
+                }
             }
         }
         else if (pile2 != null){
@@ -122,14 +136,15 @@ public class Game extends Pane {
     };
 
     public boolean isGameWon() {
-        int numberOfTableauCards = 0;
-        for(Pile pile: tableauPiles){
-            numberOfTableauCards += pile.numOfCards();
-        }
-        if(stockPile.numOfCards() + numberOfTableauCards + discardPile.numOfCards() == 1){
-            return true;
-        }
-        return false;
+        return true;
+//        int numberOfTableauCards = 0;
+//        for(Pile pile: tableauPiles){
+//            numberOfTableauCards += pile.numOfCards();
+//        }
+//        if(stockPile.numOfCards() + numberOfTableauCards + discardPile.numOfCards() == 1){
+//            return true;
+//        }
+//        return false;
     }
 
     public Game() {
@@ -168,12 +183,11 @@ public class Game extends Pane {
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        //TODO
         if (destPile.getTopCard() != null) {
             if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank() &&
                     Card.isSameSuit(destPile.getTopCard(), card)) {
                 return true;
-            } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank() &&
+            } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank() - 1) == card.getRank() &&
                     Card.isOppositeColor(destPile.getTopCard(), card)) {
                 return true;
             }
