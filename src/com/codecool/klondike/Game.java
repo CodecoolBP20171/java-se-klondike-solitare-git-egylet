@@ -4,6 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -13,6 +15,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 
 import java.util.*;
 
@@ -36,7 +39,6 @@ public class Game extends Pane {
     private static double STOCK_GAP = 1;
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
-
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
@@ -102,6 +104,13 @@ public class Game extends Pane {
         Pile pile2 = getValidIntersectingPile(card, tableauPiles);
         if (pile != null) {
             handleValidMove(card, pile);
+            if(isGameWon()){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle(null);
+                alert.setContentText("Congrats, you won :)");
+                alert.setHeaderText(null);
+                alert.showAndWait();
+            }
         }
         else if (pile2 != null){
             handleValidMove(card, pile2);
@@ -113,7 +122,13 @@ public class Game extends Pane {
     };
 
     public boolean isGameWon() {
-        //TODO
+        int numberOfTableauCards = 0;
+        for(Pile pile: tableauPiles){
+            numberOfTableauCards += pile.numOfCards();
+        }
+        if(stockPile.numOfCards() + numberOfTableauCards + discardPile.numOfCards() == 1){
+            return true;
+        }
         return false;
     }
 
@@ -155,21 +170,23 @@ public class Game extends Pane {
     public boolean isMoveValid(Card card, Pile destPile) {
         //TODO
         if (destPile.getTopCard() != null) {
-            if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank()) {
-                System.out.println("yeah");
+            if (destPile.getPileType() == FOUNDATION && (destPile.getTopCard().getRank() + 1) == card.getRank() &&
+                    Card.isSameSuit(destPile.getTopCard(), card)) {
                 return true;
-            } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank()) {
+            } else if (destPile.getPileType() == TABLEAU && (destPile.getTopCard().getRank()-1) == card.getRank() &&
+                    Card.isOppositeColor(destPile.getTopCard(), card)) {
                 return true;
             }
         } else if (destPile.getTopCard() == null) {
-            if (destPile.getPileType() == FOUNDATION) {
+            if (destPile.getPileType() == FOUNDATION && card.getRank() == 1) {
                 return true;
-            } else if (destPile.getPileType() == TABLEAU) {
+            } else if (destPile.getPileType() == TABLEAU && card.getRank() == 13) {
                 return true;
             }
         }
         return false;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
@@ -195,6 +212,7 @@ public class Game extends Pane {
                 msg = String.format("Placed %s to the foundation.", card);
             if (destPile.getPileType().equals(Pile.PileType.TABLEAU))
                 msg = String.format("Placed %s to a new pile.", card);
+
         } else {
             msg = String.format("Placed %s to %s.", card, destPile.getTopCard());
         }
@@ -238,6 +256,7 @@ public class Game extends Pane {
         }
     }
 
+
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
 
@@ -263,6 +282,11 @@ public class Game extends Pane {
         setBackground(new Background(new BackgroundImage(tableBackground,
                 BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+    }
+
+
+    public List<Pile> getTableauPiles() {
+        return tableauPiles;
     }
 
 }
