@@ -68,7 +68,6 @@ public class Pile extends Pane {
     }
 
     public Card getTopCard() {
-        //this method returns the last card object of a pile - ( used to decide whether the next card can be placed on it or not)
         if (cards.isEmpty())
             return null;
         else
