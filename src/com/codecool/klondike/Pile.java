@@ -41,7 +41,7 @@ public class Pile extends Pane {
 
     public int numOfCards() {
         //TODO
-        return 1;
+        return cards.size();
     }
 
     public boolean isEmpty() {
@@ -68,12 +68,12 @@ public class Pile extends Pane {
     }
 
     public Card getTopCard() {
-        //this method returns the last card object of a pile - ( used to decide whether the next card can be placed on it or not)
         if (cards.isEmpty())
             return null;
         else
             return cards.get(cards.size() - 1);
     }
+    
 
     public void setBlurredBackground() {
         setPrefSize(Card.WIDTH, Card.HEIGHT);
